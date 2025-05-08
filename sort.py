@@ -20,16 +20,22 @@ def main():
 
     # We define categories for files we want to sort
     categories = {
-        "System Files" : ['.exe', '.dll', '.sys', '.drv', '.ini', '.bat', '.cmd', '.msi', '.vxd', '.iso', '.sh', '.bash', '.service', '.plist', ],
-        "Documents" : ['.txt', '.docx', '.pdf'],
+        "System Files" : ['.exe', '.dll', '.sys', '.drv', '.ini',
+                          '.bat', '.cmd', '.msi', '.vxd', '.iso',
+                          '.sh', '.bash', '.service', '.plist',
+                          '.dmg', '.run', '.deb', '.rpm', '.so'],
+        "Documents" : ['.txt', '.docx', '.doc', '.pdf', '.md', '.odt'],
         "Presentations" : ['.pptx'],
-        "Tables" : ['.xlsx','.csv'],
-        "Audios" : ['.mp3', '.wav', '.flac'],
-        "Videos" : ['.mp4', '.avi', '.mov'],
-        "Images" : ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.heic', '.gif'],
-        "Fonts" : ['.ttf', '.otf', '.fon'],
-        "Programming files" : ['.html', '.htm', '.css', '.js', '.json', '.xml', '.php',
-                            '.asp', '.aspx', '.cpp', '.h', '.java', '.py', '.cs', '.rb', '.html', '.htm', '.sql']
+        "Tables" : ['.xlsx','.csv', '.tsv'],
+        "Audios" : ['.mp3', '.wav', '.flac', '.ogg', '.m4a', '.aiff'],
+        "Videos" : ['.mp4', '.avi', '.mov', '.mkv', '.webm'],
+        "Images" : ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.heic', '.svg', '.tiff'],
+        "Fonts" : ['.ttf', '.otf', '.fon', '.dfont'],
+        "Programming files" : ['.c', '.cpp', '.h', '.py', '.java',
+                               '.js', '.ts', '.sh', '.rb', '.php',
+                               '.html', '.htm', '.css', '.json','.xml',
+                               '.sql', '.rs', '.go', '.pl', '.yml',
+                               '.yaml', '.swift']
 
     }
 
