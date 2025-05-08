@@ -7,8 +7,6 @@ def parse_arguments():
     parser = argparse.ArgumentParser(prog = 'Directory sorter')
     parser.add_argument('path',
                         nargs = 1,
-                        default = os.path.expanduser('~/Downloads'),
-                        # required = False,
                         help = 'Path pointing to the directory that you want to be sorted')
 
     args = parser.parse_args()
@@ -19,9 +17,6 @@ def main():
 
     # We specify the target destination and check if it exists
     target_path = parse_arguments()[0]
-    # if not os.path.exists(target_path):
-    #     print('Path does not exist!')
-    #     exit(0)
 
     # We define categories for files we want to sort
     categories = {
