@@ -7,16 +7,25 @@ def parse_arguments():
     parser = argparse.ArgumentParser(prog = 'Directory sorter')
     parser.add_argument('path',
                         nargs = 1,
+                        type = str,
                         help = 'Path pointing to the directory that you want to be sorted')
 
-    args = parser.parse_args()
-    return args.path
+    parser.add_argument('-n', '--name',
+                        nargs = '+',
+                        type =  str,
+                        required = False,
+                        help = 'The name of the files that will be sorted into a folder. Indended use is for files with same names but different extensions.')
+    
+    return parser.parse_args()
 
 
 def main():
 
-    # We specify the target destination and check if it exists
-    target_path = parse_arguments()[0]
+    args = parse_arguments()
+    # In case of sorting a certain name, we get the name
+    names = args.name
+    # We specify the target destination
+    target_path = args.path[0]
 
     # We define categories for files we want to sort
     categories = {
@@ -49,6 +58,7 @@ def main():
 
     # Only if the directory has contents we check each one if it is a file or a subfolder
     if directory_contents:
+        
         for element in directory_contents:
             path_to_element = os.path.join(target_path, element)
 
@@ -56,13 +66,18 @@ def main():
                 directories.append(element)
 
             elif os.path.isfile(path_to_element):
-                file_extension = os.path.splitext(element)[1]
+                file = os.path.splitext(element)
+                file_name = file[0]
+                file_extension = file[1]
 
+            # If the name isn't set then it means we are executing a normal sort
+            if not names:
+            
                 # We try to check if the selected file matches one of our categories
                 for category in categories:
                     for extension in categories.get(category):
                         if file_extension == extension:
-
+                                
                             # Here the dynamic dictionary creation takes place:
                             # The 'category' is going to be used a folder name
                             # Inside this folder the absolute path to the element in question is saved
@@ -70,9 +85,17 @@ def main():
                                 created_folders[category] = []
                             created_folders[category].append(path_to_element)
                             break
+
+            # If the name is set then we find all occurences of the name and sort them into a folder                    
+            else:
+                for name in names:
+                    if file_name == name:
+                        if not name in created_folders:
+                            created_folders[name] = []
+                        created_folders[name].append(path_to_element)
     else:
         print('The downloads are empty!')
-        exit(0)
+        exit(1)
 
     moved_files = 0
     new_folders = 0
