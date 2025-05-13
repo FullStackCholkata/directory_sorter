@@ -15,6 +15,10 @@ def parse_arguments():
                         type =  str,
                         required = False,
                         help = 'The name of the files that will be sorted into a folder. Indended use is for files with same names but different extensions.')
+
+    parser.add_argument('-v', '--verbose',
+                        action = 'store_true',
+                        help = 'Show detailed output during processing')    
     
     return parser.parse_args()
 
@@ -26,6 +30,7 @@ def main():
     names = args.name
     # We specify the target destination
     target_path = args.path[0]
+    verbose = args.verbose
 
     # We define categories for files we want to sort
     categories = {
@@ -60,39 +65,43 @@ def main():
     if directory_contents:
         
         for element in directory_contents:
+
+            if verbose: print(f"Processing element: '{element}'")
+
             path_to_element = os.path.join(target_path, element)
 
             if os.path.isdir(path_to_element):
+                # Just add to directories list, don't process further
                 directories.append(element)
+                if verbose: print(f"{element} added to already existing directories and skipping")
 
             elif os.path.isfile(path_to_element):
                 file = os.path.splitext(element)
                 file_name = file[0]
                 file_extension = file[1]
 
-            # If the name isn't set then it means we are executing a normal sort
-            if not names:
-            
-                # We try to check if the selected file matches one of our categories
-                for category in categories:
-                    for extension in categories.get(category):
-                        if file_extension == extension:
-                                
-                            # Here the dynamic dictionary creation takes place:
-                            # The 'category' is going to be used a folder name
-                            # Inside this folder the absolute path to the element in question is saved
-                            if not category in created_folders:
-                                created_folders[category] = []
-                            created_folders[category].append(path_to_element)
-                            break
-
-            # If the name is set then we find all occurences of the name and sort them into a folder                    
-            else:
-                for name in names:
-                    if file_name == name:
-                        if not name in created_folders:
-                            created_folders[name] = []
-                        created_folders[name].append(path_to_element)
+                # If the name isn't set then it means we are executing a normal sort
+                if not names:
+                    # We try to check if the selected file matches one of our categories
+                    for category in categories:
+                        for extension in categories.get(category):
+                            if file_extension == extension:
+                                # Here the dynamic dictionary creation takes place:
+                                if not category in created_folders:
+                                    created_folders[category] = []
+                                    if verbose: print(f"Dynamically planning a new directory '{category}'")
+                                created_folders[category].append(path_to_element)
+                                if verbose: print(f"'{element}' added to the dynamic list of '{category}'")
+                                break
+                # If the name is set then we find all occurrences of the name and sort them into a folder
+                else:
+                    for name in names:
+                        if file_name == name:
+                            if not name in created_folders:
+                                created_folders[name] = []
+                                if verbose: print(f"Dynamically planning a new directory '{name}'")
+                            created_folders[name].append(path_to_element)
+                            if verbose: print(f"'{element}' added to the dynamic list of '{name}'")
     else:
         print('The downloads are empty!')
         exit(1)
@@ -105,12 +114,20 @@ def main():
 
         if not folder in directories:
             os.mkdir(os.path.join(target_path, folder))
+            if verbose: print(f"Creating a new directory '{folder}'")
             new_folders += 1
 
         destination_path = os.path.join(target_path, folder)
         for path in created_folders.get(folder):
-            shutil.move(path, destination_path)
-            moved_files += 1
+            # Extra safety check
+            if os.path.isfile(path):
+                shutil.move(path, destination_path)
+                if verbose:
+                    name = os.path.basename(path)
+                    print(f"'{name}' moved into '{folder}'")
+                moved_files += 1
+            elif verbose:
+                print(f"Skipping directory: '{path}'")
 
 
     print(f'Moving is done! {moved_files} has been moved into {new_folders} new folders!')
